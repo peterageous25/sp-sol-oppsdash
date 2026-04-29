@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpsBoard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F7F6F2;
+  --surface: #FFFFFF;
+  --surface2: #EFEDE7;
+  --surface3: #E6E3DA;
+  --border: #E2DED5;
+  --border2: #C8C4B8;
+  --text: #18170F;
+  --text2: #6B6858;
+  --text3: #9E9B90;
+  --accent: #1B4332;
+  --accent-light: #E8F0EB;
+  --accent-mid: #2D6A4F;
+  --blue: #1A3A5C;
+  --blue-light: #E4EBF5;
+  --amber: #7C4F1A;
+  --amber-light: #F5EDD6;
+  --red: #7A1F1F;
+  --red-light: #F5E4E4;
+  --teal: #0D4A4A;
+  --teal-light: #E0F0F0;
+  --r: 8px;
+  --rl: 12px;
+  --rxl: 16px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+
+/* ---- LOGIN SCREEN ---- */
+#login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--text);
+  position: relative;
+  overflow: hidden;
+}
+#login-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.04) 39px, rgba(255,255,255,0.04) 40px),
+              repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.04) 39px, rgba(255,255,255,0.04) 40px);
+}
+.login-box {
+  background: var(--surface);
+  border-radius: var(--rxl);
+  padding: 40px;
+  width: 380px;
+  position: relative;
+  z-index: 1;
+}
+.login-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 6px;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.login-logo-mark {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+.login-logo-mark svg { width: 16px; height: 16px; fill: #fff; }
+.login-sub { font-size: 13px; color: var(--text2); margin-bottom: 28px; }
+.login-error { background: var(--red-light); color: var(--red); font-size: 12px; padding: 8px 12px; border-radius: var(--r); margin-bottom: 14px; display: none; }
+.login-form-group { margin-bottom: 14px; }
+.login-label { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 5px; display: block; }
+.login-input {
+  width: 100%; padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.login-input:focus { border-color: var(--accent); background: #fff; }
+.login-btn {
+  width: 100%; padding: 11px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--r);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: background 0.15s;
+}
+.login-btn:hover { background: var(--accent-mid); }
+.login-hint { font-size: 11px; color: var(--text3); margin-top: 14px; text-align: center; }
+
+/* ---- APP SHELL ---- */
+#app { display: none; }
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: 220px;
+  background: var(--text);
+  display: flex; flex-direction: column;
+  z-index: 50;
+  padding: 0;
+}
+.sidebar-logo {
+  padding: 20px 20px 16px;
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sidebar-logo-mark {
+  width: 24px; height: 24px;
+  background: var(--accent-mid);
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.sidebar-logo-mark svg { width: 12px; height: 12px; fill: #fff; }
+.sidebar-section { padding: 12px 12px 4px; }
+.sidebar-section-label { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.1em; padding: 0 8px; margin-bottom: 4px; }
+.sidebar-nav-btn {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 8px 10px;
+  border-radius: var(--r);
+  border: none;
+  background: none;
+  color: rgba(255,255,255,0.55);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+}
+.sidebar-nav-btn:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); }
+.sidebar-nav-btn.active { background: var(--accent); color: #fff; font-weight: 500; }
+.sidebar-nav-btn svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.7; }
+.sidebar-nav-btn.active svg { opacity: 1; }
+
+.project-pill {
+  display: flex; align-items: center; gap: 6px;
+  width: 100%; padding: 7px 10px;
+  border-radius: var(--r);
+  border: none;
+  background: none;
+  color: rgba(255,255,255,0.55);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+}
+.project-pill:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); }
+.project-pill.active { background: rgba(255,255,255,0.1); color: #fff; }
+.project-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.project-pill-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.project-pill-role { font-size: 10px; opacity: 0.5; flex-shrink: 0; }
+
+.add-project-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 10px;
+  color: rgba(255,255,255,0.3);
+  font-size: 12px;
+  cursor: pointer;
+  border: none; background: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: color 0.15s;
+  width: 100%;
+}
+.add-project-btn:hover { color: rgba(255,255,255,0.6); }
+
+.sidebar-footer {
+  margin-top: auto;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 12px;
+}
+.user-chip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--r);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.user-chip:hover { background: rgba(255,255,255,0.07); }
+.user-avatar-sm {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; flex-shrink: 0;
+}
+.user-info { flex: 1; min-width: 0; }
+.user-name-sm { font-size: 12px; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role-sm { font-size: 10px; color: rgba(255,255,255,0.4); }
+.logout-btn { font-size: 10px; color: rgba(255,255,255,0.3); cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif; transition: color 0.15s; }
+.logout-btn:hover { color: rgba(255,255,255,0.6); }
+
+/* MAIN */
+.main { margin-left: 220px; min-height: 100vh; }
+
+/* TOP BAR */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top: 0; z-index: 40;
+}
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.topbar-project { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
+.topbar-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.06em; }
+.role-admin { background: var(--accent-light); color: var(--accent); }
+.role-member { background: var(--blue-light); color: var(--blue); }
+.role-viewer { background: var(--surface2); color: var(--text2); }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+.btn { padding: 7px 16px; border-radius: var(--r); border: 1px solid var(--border); background: var(--surface); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.btn:hover { border-color: var(--border2); background: var(--surface2); }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn.primary:hover { background: var(--accent-mid); }
+.btn.danger { background: var(--red-light); color: var(--red); border-color: transparent; }
+.btn.danger:hover { background: #f0d0d0; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* TABS */
+.tabs { display: flex; gap: 2px; padding: 0 24px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.tab-btn { padding: 10px 16px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text2); border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; }
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* CONTENT */
+.content { padding: 24px; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* PAGE HEADER */
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+.page-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+.page-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.btn-row { display: flex; gap: 8px; }
+
+/* STAT GRID */
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl); padding: 16px 18px; }
+.stat-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
+.stat-val { font-size: 26px; font-weight: 600; font-family: 'Syne', sans-serif; letter-spacing: -0.6px; }
+.stat-sub { font-size: 11px; color: var(--text2); margin-top: 3px; }
+.c-green { color: var(--accent); }
+.c-blue { color: var(--blue); }
+.c-amber { color: var(--amber); }
+.c-red { color: var(--red); }
+
+/* DASHBOARD PANELS */
+.dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl); padding: 18px 20px; }
+.panel-title { font-size: 13px; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+.panel-title span { font-weight: 400; color: var(--text3); font-size: 12px; }
+.priority-item { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.priority-item:last-child { border-bottom: none; }
+.dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.dot-red { background: #C0392B; }
+.dot-amber { background: #D4851A; }
+.dot-green { background: var(--accent-mid); }
+.priority-name { flex: 1; }
+.priority-owner { font-size: 11px; color: var(--text3); max-width: 70px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.progress-wrap { margin-bottom: 12px; }
+.progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+.progress-track { height: 5px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 99px; background: var(--accent); }
+
+/* BADGE */
+.badge { font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
+.badge-todo { background: var(--surface2); color: var(--text2); }
+.badge-in-progress { background: var(--blue-light); color: var(--blue); }
+.badge-review { background: var(--amber-light); color: var(--amber); }
+.badge-done { background: var(--accent-light); color: var(--accent); }
+.badge-blocked { background: var(--red-light); color: var(--red); }
+
+/* KANBAN */
+.kanban-outer { overflow-x: auto; padding-bottom: 16px; }
+.kanban { display: flex; gap: 14px; min-width: max-content; align-items: flex-start; }
+.k-col { width: 240px; flex-shrink: 0; }
+.k-col-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.k-col-name { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text2); }
+.k-count { font-size: 11px; color: var(--text3); background: var(--surface2); padding: 1px 6px; border-radius: 99px; font-family: 'DM Mono', monospace; }
+.k-cards { display: flex; flex-direction: column; gap: 8px; min-height: 60px; padding: 2px; border-radius: var(--r); transition: background 0.15s; }
+.k-col.drag-over .k-cards { background: var(--accent-light); }
+.k-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl); padding: 12px 14px; cursor: grab; transition: border-color 0.15s, transform 0.1s; }
+.k-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+.k-card.dragging { opacity: 0.3; }
+.k-card-title { font-size: 13px; font-weight: 500; line-height: 1.4; margin-bottom: 9px; }
+.k-card-foot { display: flex; align-items: center; justify-content: space-between; }
+.k-owner { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 5px; }
+.av { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; flex-shrink: 0; }
+.k-pri { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+.pri-high { background: var(--red-light); color: var(--red); }
+.pri-med { background: var(--amber-light); color: var(--amber); }
+.pri-low { background: var(--accent-light); color: var(--accent); }
+.k-add { border: 1px dashed var(--border2); border-radius: var(--rl); padding: 9px; text-align: center; color: var(--text3); font-size: 12px; cursor: pointer; margin-top: 6px; transition: all 0.15s; }
+.k-add:hover { background: var(--surface); color: var(--text2); }
+
+/* ROADMAP */
+.rm-container { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl); overflow: hidden; }
+.rm-header-row { display: grid; border-bottom: 1px solid var(--border); }
+.rm-month { text-align: center; font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 0; border-right: 1px solid var(--border); }
+.rm-month:last-child { border-right: none; }
+.rm-month.now { color: var(--accent); background: var(--accent-light); }
+.rm-row { display: grid; border-bottom: 1px solid var(--border); }
+.rm-row:last-child { border-bottom: none; }
+.rm-label-cell { padding: 0 14px; display: flex; align-items: center; gap: 8px; border-right: 1px solid var(--border); font-size: 13px; font-weight: 500; }
+.rm-timeline-cell { position: relative; height: 52px; }
+.rm-bar { position: absolute; top: 50%; transform: translateY(-50%); height: 26px; border-radius: 6px; display: flex; align-items: center; padding: 0 10px; font-size: 11px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; transition: filter 0.15s; }
+.rm-bar:hover { filter: brightness(1.12); }
+.rm-bar.green { background: var(--accent-mid); }
+.rm-bar.blue { background: var(--blue); }
+.rm-bar.amber { background: #D4851A; }
+.rm-bar.red { background: #B03030; }
+.rm-bar.teal { background: var(--teal); }
+.rm-grid-line { position: absolute; top: 0; bottom: 0; border-right: 1px solid var(--border); }
+.rm-grid-line.now { border-right: 2px solid var(--accent-mid); opacity: 0.3; }
+
+/* TEAM */
+.team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+.team-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl); padding: 18px; }
+.team-av { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+.team-name { font-size: 14px; font-weight: 600; font-family: 'Syne', sans-serif; }
+.team-role { font-size: 12px; color: var(--text2); margin-bottom: 12px; }
+.team-nums { display: flex; gap: 14px; margin-bottom: 12px; }
+.team-num { text-align: center; }
+.team-num-val { font-size: 18px; font-weight: 600; font-family: 'Syne', sans-serif; }
+.team-num-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; }
+.team-tasks-list { border-top: 1px solid var(--border); padding-top: 10px; }
+.team-task-row { font-size: 12px; color: var(--text2); padding: 3px 0; display: flex; align-items: center; gap: 6px; }
+.team-access-badge { font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 99px; }
+
+/* ACCESS CONTROL */
+.access-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: var(--rl); overflow: hidden; border: 1px solid var(--border); }
+.access-table th { background: var(--surface2); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text2); padding: 10px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+.access-table td { padding: 10px 16px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.access-table tr:last-child td { border-bottom: none; }
+.access-table tr:hover td { background: var(--bg); }
+.role-select { font-size: 12px; padding: 4px 8px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); font-family: 'DM Sans', sans-serif; color: var(--text); cursor: pointer; }
+.role-select:focus { outline: none; border-color: var(--accent); }
+.remove-access { font-size: 11px; color: var(--red); cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif; padding: 3px 6px; border-radius: 4px; }
+.remove-access:hover { background: var(--red-light); }
+
+/* PROJECT HOME */
+.no-project {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 60vh; text-align: center;
+}
+.no-project-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
+.no-project-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.no-project-sub { font-size: 14px; color: var(--text2); margin-bottom: 24px; }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border-radius: var(--rxl); padding: 28px; width: 440px; max-width: 95vw; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border); }
+.modal-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 600; margin-bottom: 20px; letter-spacing: -0.3px; }
+.form-row { margin-bottom: 14px; }
+.form-label { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 5px; display: block; }
+.form-input { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--r); font-family: 'DM Sans', sans-serif; font-size: 13px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; }
+.form-input:focus { border-color: var(--accent); background: #fff; }
+.form-input[type=color] { height: 38px; padding: 4px 8px; cursor: pointer; }
+.form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+.form-section { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin: 18px 0 10px; }
+
+.invite-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.invite-row .form-input { flex: 1; }
+.invite-row select { width: 110px; flex-shrink: 0; }
+
+.empty-state { text-align: center; padding: 36px; color: var(--text3); font-size: 13px; }
+
+/* GLOBAL HOME (all projects) */
+.all-projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.project-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--rl); padding: 20px; cursor: pointer; transition: border-color 0.15s, transform 0.1s; }
+.project-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+.project-card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.project-color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.project-card-name { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: -0.2px; }
+.project-card-role { font-size: 11px; margin-top: 2px; }
+.project-card-stats { display: flex; gap: 14px; margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; }
+.pcs { text-align: center; }
+.pcs-val { font-size: 18px; font-weight: 600; font-family: 'Syne', sans-serif; }
+.pcs-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; }
+</style>
+</head>
+<body>
+
+<!-- ========== LOGIN ========== -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-mark">
+        <svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+      </div>
+      OpsBoard
+    </div>
+    <div class="login-sub">Sign in to your workspace</div>
+    <div class="login-error" id="login-error">Incorrect username or password.</div>
+    <div class="login-form-group">
+      <label class="login-label">Username</label>
+      <input class="login-input" id="login-user" type="text" placeholder="Enter your username" autocomplete="username">
+    </div>
+    <div class="login-form-group">
+      <label class="login-label">Password</label>
+      <input class="login-input" id="login-pass" type="password" placeholder="Enter your password" autocomplete="current-password">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Sign in</button>
+    <div class="login-hint">Default admin: username <strong>admin</strong> / password <strong>admin123</strong></div>
+  </div>
+</div>
+
+<!-- ========== APP ========== -->
+<div id="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">
+        <svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+      </div>
+      OpsBoard
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Workspace</div>
+      <button class="sidebar-nav-btn" onclick="showHome()">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1L1 7v8h5v-5h4v5h5V7z"/></svg>
+        All projects
+      </button>
+    </div>
+
+    <div class="sidebar-section" style="flex:1;overflow-y:auto;">
+      <div class="sidebar-section-label">My projects</div>
+      <div id="sidebar-projects"></div>
+      <button class="add-project-btn" id="add-project-sidebar-btn" onclick="openAddProject()" style="display:none;">
+        <svg viewBox="0 0 16 16" fill="currentColor" width="12" height="12"><path d="M8 2v12M2 8h12"/></svg>
+        New project
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-chip" onclick="openUserSettings()">
+        <div class="user-avatar-sm" id="sidebar-av" style="background:#2D6A4F33;color:#2D6A4F">?</div>
+        <div class="user-info">
+          <div class="user-name-sm" id="sidebar-uname">—</div>
+          <div class="user-role-sm" id="sidebar-urole">—</div>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">Sign out</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- HOME -->
+    <div id="home-view">
+      <div class="topbar">
+        <div class="topbar-left"><span class="topbar-project">All projects</span></div>
+        <div class="topbar-right">
+          <button class="btn primary" id="add-project-top-btn" onclick="openAddProject()" style="display:none;">+ New project</button>
+        </div>
+      </div>
+      <div class="content" id="home-content"></div>
+    </div>
+
+    <!-- PROJECT VIEW -->
+    <div id="project-view" style="display:none;">
+      <div class="topbar">
+        <div class="topbar-left">
+          <span class="topbar-project" id="topbar-project-name">Project</span>
+          <span class="topbar-badge" id="topbar-role-badge"></span>
+        </div>
+        <div class="topbar-right" id="topbar-actions"></div>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('dashboard')">Dashboard</button>
+        <button class="tab-btn" onclick="showTab('kanban')">Kanban</button>
+        <button class="tab-btn" onclick="showTab('roadmap')">Roadmap</button>
+        <button class="tab-btn" onclick="showTab('team')">Team</button>
+        <button class="tab-btn" id="tab-access-btn" onclick="showTab('access')" style="display:none;">Access</button>
+      </div>
+      <div class="content">
+        <div class="tab-panel active" id="tab-dashboard"></div>
+        <div class="tab-panel" id="tab-kanban"></div>
+        <div class="tab-panel" id="tab-roadmap"></div>
+        <div class="tab-panel" id="tab-team"></div>
+        <div class="tab-panel" id="tab-access"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODALS ========== -->
+
+<!-- Add/Edit Task -->
+<div class="modal-overlay" id="modal-task">
+  <div class="modal">
+    <div class="modal-title" id="modal-task-title">Add task</div>
+    <div class="form-row"><label class="form-label">Task name</label><input class="form-input" id="t-name" placeholder="Describe the task"></div>
+    <div class="form-row"><label class="form-label">Owner</label><select class="form-input" id="t-owner"></select></div>
+    <div class="form-2col">
+      <div class="form-row"><label class="form-label">Status</label>
+        <select class="form-input" id="t-status">
+          <option value="todo">To do</option><option value="in-progress">In progress</option>
+          <option value="review">In review</option><option value="blocked">Blocked</option><option value="done">Done</option>
+        </select>
+      </div>
+      <div class="form-row"><label class="form-label">Priority</label>
+        <select class="form-input" id="t-pri">
+          <option value="high">High</option><option value="med">Medium</option><option value="low">Low</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn danger" id="delete-task-btn" onclick="deleteTask()" style="display:none;margin-right:auto;">Delete task</button>
+      <button class="btn" onclick="closeModal('modal-task')">Cancel</button>
+      <button class="btn primary" onclick="saveTask()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Roadmap item -->
+<div class="modal-overlay" id="modal-rm">
+  <div class="modal">
+    <div class="modal-title" id="modal-rm-title">Add roadmap project</div>
+    <div class="form-row"><label class="form-label">Project name</label><input class="form-input" id="r-name" placeholder="Name"></div>
+    <div class="form-row"><label class="form-label">Owner</label><select class="form-input" id="r-owner"></select></div>
+    <div class="form-2col">
+      <div class="form-row"><label class="form-label">Start month (1–6)</label><input class="form-input" id="r-start" type="number" min="1" max="6" value="1"></div>
+      <div class="form-row"><label class="form-label">Duration (months)</label><input class="form-input" id="r-dur" type="number" min="1" max="6" value="2"></div>
+    </div>
+    <div class="form-row"><label class="form-label">Colour</label>
+      <select class="form-input" id="r-color">
+        <option value="green">Green</option><option value="blue">Blue</option>
+        <option value="amber">Amber</option><option value="red">Red</option><option value="teal">Teal</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn danger" id="delete-rm-btn" onclick="deleteRmItem()" style="display:none;margin-right:auto;">Delete</button>
+      <button class="btn" onclick="closeModal('modal-rm')">Cancel</button>
+      <button class="btn primary" onclick="saveRmItem()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Project -->
+<div class="modal-overlay" id="modal-project">
+  <div class="modal">
+    <div class="modal-title">Create project</div>
+    <div class="form-row"><label class="form-label">Project name</label><input class="form-input" id="p-name" placeholder="e.g. Tax Season 2025"></div>
+    <div class="form-row"><label class="form-label">Description</label><input class="form-input" id="p-desc" placeholder="Short description (optional)"></div>
+    <div class="form-row"><label class="form-label">Colour</label><input class="form-input" id="p-color" type="color" value="#2D5A3D"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-project')">Cancel</button>
+      <button class="btn primary" onclick="saveProject()">Create project</button>
+    </div>
+  </div>
+</div>
+
+<!-- Invite to project -->
+<div class="modal-overlay" id="modal-invite">
+  <div class="modal">
+    <div class="modal-title">Manage access</div>
+    <div class="form-section">Invite user</div>
+    <div class="invite-row">
+      <select class="form-input" id="inv-user"></select>
+      <select class="form-input" id="inv-role">
+        <option value="admin">Admin</option>
+        <option value="member" selected>Member</option>
+        <option value="viewer">Viewer</option>
+      </select>
+      <button class="btn primary" onclick="doInvite()">Add</button>
+    </div>
+    <div class="form-section">Current access</div>
+    <div id="current-access-list"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-invite')">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add team member (global user) -->
+<div class="modal-overlay" id="modal-member">
+  <div class="modal">
+    <div class="modal-title">Add team member</div>
+    <div class="form-row"><label class="form-label">Full name</label><input class="form-input" id="m-name" placeholder="Full name"></div>
+    <div class="form-row"><label class="form-label">Username</label><input class="form-input" id="m-user" placeholder="e.g. jsmith"></div>
+    <div class="form-row"><label class="form-label">Password</label><input class="form-input" id="m-pass" type="password" placeholder="Set a password"></div>
+    <div class="form-row"><label class="form-label">Role / title</label><input class="form-input" id="m-role" placeholder="e.g. Senior Accountant"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-member')">Cancel</button>
+      <button class="btn primary" onclick="saveMember()">Add member</button>
+    </div>
+  </div>
+</div>
+
+<!-- User settings -->
+<div class="modal-overlay" id="modal-user-settings">
+  <div class="modal">
+    <div class="modal-title">Account settings</div>
+    <div class="form-row"><label class="form-label">Display name</label><input class="form-input" id="us-name" placeholder="Your name"></div>
+    <div class="form-row"><label class="form-label">Role / title</label><input class="form-input" id="us-role" placeholder="Your job title"></div>
+    <div class="form-row"><label class="form-label">New password (leave blank to keep)</label><input class="form-input" id="us-pass" type="password" placeholder="New password"></div>
+    <div id="admin-section" style="display:none;">
+      <div class="form-section">Admin tools</div>
+      <button class="btn" onclick="openAddMember()" style="margin-bottom:8px;width:100%;">+ Add team member</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-user-settings')">Cancel</button>
+      <button class="btn primary" onclick="saveUserSettings()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== DATA LAYER ====================
+const COLORS = ['#2D5A3D','#1A3A5C','#7C4F1A','#7A1F1F','#0D4A4A','#5A2D8B','#1A5C4A'];
+const STATUSES = ['todo','in-progress','review','blocked','done'];
+const STATUS_LABELS = {todo:'To do','in-progress':'In progress',review:'In review',blocked:'Blocked',done:'Done'};
+
+function ls(k,d) { try { return JSON.parse(localStorage.getItem('ops_'+k)) ?? d; } catch(e) { return d; } }
+function ss(k,v) { localStorage.setItem('ops_'+k, JSON.stringify(v)); }
+
+let DB = {
+  users: ls('users', [
+    { id:1, username:'admin', password:'admin123', name:'Admin', role:'Group Operations Manager', color:'#2D5A3D', isAdmin:true }
+  ]),
+  projects: ls('projects', []),
+  tasks: ls('tasks', []),
+  roadmap: ls('roadmap', []),
+  nextId: ls('nextId', 10)
+};
+
+let currentUser = null;
+let currentProjectId = null;
+let editingTaskId = null;
+let editingRmId = null;
+
+function persist() {
+  ss('users', DB.users);
+  ss('projects', DB.projects);
+  ss('tasks', DB.tasks);
+  ss('roadmap', DB.roadmap);
+  ss('nextId', DB.nextId);
+}
+
+function uid() { return DB.nextId++; }
+
+// ==================== AUTH ====================
+function doLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  const user = DB.users.find(x => x.username === u && x.password === p);
+  if (!user) {
+    document.getElementById('login-error').style.display = 'block';
+    return;
+  }
+  currentUser = user;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  bootApp();
+}
+
+function doLogout() {
+  currentUser = null;
+  currentProjectId = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-error').style.display = 'none';
+}
+
+document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
+
+// ==================== BOOT ====================
+function bootApp() {
+  updateSidebar();
+  showHome();
+}
+
+function updateSidebar() {
+  if (!currentUser) return;
+  const av = document.getElementById('sidebar-av');
+  const initials = currentUser.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  av.textContent = initials;
+  av.style.background = currentUser.color + '33';
+  av.style.color = currentUser.color;
+  document.getElementById('sidebar-uname').textContent = currentUser.name;
+  document.getElementById('sidebar-urole').textContent = currentUser.role;
+
+  // Show add project btn only for admins
+  const showAdd = currentUser.isAdmin;
+  document.getElementById('add-project-sidebar-btn').style.display = showAdd ? 'flex' : 'none';
+  document.getElementById('add-project-top-btn').style.display = showAdd ? 'block' : 'none';
+
+  // Projects in sidebar
+  const myProjects = getMyProjects();
+  document.getElementById('sidebar-projects').innerHTML = myProjects.map(p => {
+    const role = getMyRole(p.id);
+    return `<button class="project-pill${currentProjectId===p.id?' active':''}" onclick="openProject(${p.id})">
+      <div class="project-dot" style="background:${p.color}"></div>
+      <span class="project-pill-name">${p.name}</span>
+      <span class="project-pill-role">${role||''}</span>
+    </button>`;
+  }).join('');
+}
+
+function getMyProjects() {
+  if (currentUser.isAdmin) return DB.projects;
+  return DB.projects.filter(p => {
+    const access = p.access || [];
+    return access.some(a => a.userId === currentUser.id);
+  });
+}
+
+function getMyRole(projectId) {
+  const p = DB.projects.find(x => x.id === projectId);
+  if (!p) return null;
+  if (currentUser.isAdmin) return 'admin';
+  const a = (p.access||[]).find(x => x.userId === currentUser.id);
+  return a ? a.role : null;
+}
+
+function canEdit(projectId) {
+  const role = getMyRole(projectId);
+  return role === 'admin' || role === 'member';
+}
+
+function isProjectAdmin(projectId) {
+  const role = getMyRole(projectId);
+  return role === 'admin';
+}
+
+// ==================== HOME ====================
+function showHome() {
+  currentProjectId = null;
+  document.getElementById('home-view').style.display = 'block';
+  document.getElementById('project-view').style.display = 'none';
+  updateSidebar();
+  renderHome();
+}
+
+function renderHome() {
+  const myProjects = getMyProjects();
+  const content = document.getElementById('home-content');
+  if (!myProjects.length) {
+    content.innerHTML = `<div class="no-project">
+      <div class="no-project-icon">&#9783;</div>
+      <div class="no-project-title">No projects yet</div>
+      <div class="no-project-sub">${currentUser.isAdmin ? 'Create your first project to get started.' : 'Ask your admin to add you to a project.'}</div>
+      ${currentUser.isAdmin ? `<button class="btn primary" onclick="openAddProject()">+ Create project</button>` : ''}
+    </div>`;
+    return;
+  }
+  content.innerHTML = `
+    <div class="page-header"><div><div class="page-title">All projects</div><div class="page-sub">${myProjects.length} project${myProjects.length!==1?'s':''} you have access to</div></div></div>
+    <div class="all-projects-grid">
+      ${myProjects.map(p => {
+        const tasks = DB.tasks.filter(t => t.projectId === p.id);
+        const done = tasks.filter(t => t.status === 'done').length;
+        const blocked = tasks.filter(t => t.status === 'blocked').length;
+        const role = getMyRole(p.id);
+        const roleBadge = role === 'admin' ? 'role-admin' : role === 'member' ? 'role-member' : 'role-viewer';
+        return `<div class="project-card" onclick="openProject(${p.id})">
+          <div class="project-card-top">
+            <div class="project-color-dot" style="background:${p.color}"></div>
+            <div>
+              <div class="project-card-name">${p.name}</div>
+              <div class="project-card-role"><span class="badge ${roleBadge}" style="font-size:10px;padding:1px 7px;border-radius:99px;">${role}</span></div>
+            </div>
+          </div>
+          ${p.desc ? `<div style="font-size:12px;color:var(--text2);margin-bottom:4px;">${p.desc}</div>` : ''}
+          <div class="project-card-stats">
+            <div class="pcs"><div class="pcs-val">${tasks.length}</div><div class="pcs-label">Tasks</div></div>
+            <div class="pcs"><div class="pcs-val c-red">${blocked}</div><div class="pcs-label">Blocked</div></div>
+            <div class="pcs"><div class="pcs-val c-green">${done}</div><div class="pcs-label">Done</div></div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+// ==================== PROJECT ==================
+function openProject(id) {
+  const role = getMyRole(id);
+  if (!role) return;
+  currentProjectId = id;
+  document.getElementById('home-view').style.display = 'none';
+  document.getElementById('project-view').style.display = 'block';
+  updateSidebar();
+  renderProject();
+  showTab('dashboard');
+}
+
+function renderProject() {
+  const p = DB.projects.find(x => x.id === currentProjectId);
+  if (!p) return;
+  const role = getMyRole(currentProjectId);
+  document.getElementById('topbar-project-name').textContent = p.name;
+  const rb = document.getElementById('topbar-role-badge');
+  rb.textContent = role;
+  rb.className = 'topbar-badge ' + (role==='admin'?'role-admin':role==='member'?'role-member':'role-viewer');
+
+  // Access tab only for project admins
+  document.getElementById('tab-access-btn').style.display = isProjectAdmin(currentProjectId) ? 'block' : 'none';
+
+  // Topbar actions
+  const actions = document.getElementById('topbar-actions');
+  if (isProjectAdmin(currentProjectId)) {
+    actions.innerHTML = `<button class="btn" onclick="openInvite()">Manage access</button>
+      <button class="btn primary" onclick="openAddTask()">+ Add task</button>`;
+  } else if (canEdit(currentProjectId)) {
+    actions.innerHTML = `<button class="btn primary" onclick="openAddTask()">+ Add task</button>`;
+  } else {
+    actions.innerHTML = '';
+  }
+}
+
+function showTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    const tabs = ['dashboard','kanban','roadmap','team','access'];
+    b.classList.toggle('active', tabs[i] === tab);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  const renders = {dashboard:renderDashboard, kanban:renderKanban, roadmap:renderRoadmap, team:renderTeam, access:renderAccess};
+  if (renders[tab]) renders[tab]();
+}
+
+// ==================== DASHBOARD ====================
+function renderDashboard() {
+  const pid = currentProjectId;
+  const tasks = DB.tasks.filter(t => t.projectId === pid);
+  const total = tasks.length, done = tasks.filter(t=>t.status==='done').length;
+  const blocked = tasks.filter(t=>t.status==='blocked').length;
+  const inprog = tasks.filter(t=>t.status==='in-progress').length;
+  const pct = total ? Math.round(done/total*100) : 0;
+
+  const projectUsers = getProjectUsers();
+
+  const priority = tasks.filter(t=>t.status!=='done').sort((a,b)=>({high:0,med:1,low:2}[a.pri]||1)-({high:0,med:1,low:2}[b.pri]||1)).slice(0,6);
+
+  const workloadBars = projectUsers.map(u => {
+    const ut = tasks.filter(t=>t.ownerName===u.name);
+    const udone = ut.filter(t=>t.status==='done').length;
+    const pp = ut.length ? Math.round(udone/ut.length*100) : 0;
+    return `<div class="progress-wrap">
+      <div class="progress-label"><span>${u.name}</span><span>${ut.length} tasks · ${pp}% done</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pp}%"></div></div>
+    </div>`;
+  }).join('') || '<div class="empty-state">No team members added</div>';
+
+  document.getElementById('tab-dashboard').innerHTML = `
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Total tasks</div><div class="stat-val c-blue">${total}</div><div class="stat-sub">in this project</div></div>
+      <div class="stat-card"><div class="stat-label">In progress</div><div class="stat-val c-green">${inprog}</div><div class="stat-sub">active now</div></div>
+      <div class="stat-card"><div class="stat-label">Blocked</div><div class="stat-val c-red">${blocked}</div><div class="stat-sub">${blocked>0?'needs attention':'all clear'}</div></div>
+      <div class="stat-card"><div class="stat-label">Completion</div><div class="stat-val c-amber">${pct}%</div><div class="stat-sub">${done} of ${total} done</div></div>
+    </div>
+    <div class="dash-grid">
+      <div class="panel">
+        <div class="panel-title">Priority items</div>
+        ${priority.length ? priority.map(t=>`<div class="priority-item">
+          <div class="dot dot-${t.pri==='high'?'red':t.pri==='med'?'amber':'green'}"></div>
+          <span class="priority-name">${t.name}</span>
+          <span class="priority-owner">${t.ownerName||'—'}</span>
+          <span class="badge badge-${t.status}">${STATUS_LABELS[t.status]}</span>
+        </div>`).join('') : '<div class="empty-state">No open tasks</div>'}
+      </div>
+      <div class="panel">
+        <div class="panel-title">Team workload</div>
+        ${workloadBars}
+      </div>
+    </div>`;
+}
+
+// ==================== KANBAN ====================
+let dragging = null;
+function renderKanban() {
+  const pid = currentProjectId;
+  const tasks = DB.tasks.filter(t => t.projectId === pid);
+  const editable = canEdit(pid);
+  const el = document.getElementById('tab-kanban');
+  el.innerHTML = `
+    <div class="page-header">
+      <div><div class="page-title">Kanban board</div><div class="page-sub">Drag cards to update status${!editable?' (view only)':''}</div></div>
+    </div>
+    <div class="kanban-outer"><div class="kanban" id="kanban-board"></div></div>`;
+  const board = document.getElementById('kanban-board');
+  board.innerHTML = STATUSES.map(status => {
+    const cards = tasks.filter(t => t.status === status);
+    return `<div class="k-col" data-status="${status}" ondragover="dragOver(event)" ondrop="drop(event,this)">
+      <div class="k-col-hd"><span class="k-col-name">${STATUS_LABELS[status]}</span><span class="k-count">${cards.length}</span></div>
+      <div class="k-cards">${cards.map(t => {
+        const u = DB.users.find(x=>x.name===t.ownerName);
+        const col = u ? u.color : '#9E9C92';
+        const init = t.ownerName ? t.ownerName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() : '?';
+        return `<div class="k-card" draggable="${editable}" data-id="${t.id}" ondragstart="dragStart(event,${t.id})" ${editable?`ondblclick="editTask(${t.id})"`:''}}>
+          <div class="k-card-title">${t.name}</div>
+          <div class="k-card-foot">
+            <div class="k-owner"><div class="av" style="background:${col}33;color:${col}">${init}</div>${t.ownerName||'Unassigned'}</div>
+            <span class="k-pri pri-${t.pri}">${t.pri}</span>
+          </div>
+        </div>`;
+      }).join('')}</div>
+      ${editable ? `<div class="k-add" onclick="openAddTaskInStatus('${status}')">+ Add</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function dragStart(e, id) { dragging = id; setTimeout(()=>e.target.classList.add('dragging'),0); }
+function dragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function drop(e, col) {
+  e.preventDefault(); col.classList.remove('drag-over');
+  if (!dragging || !canEdit(currentProjectId)) return;
+  const t = DB.tasks.find(x => x.id === dragging);
+  if (t) { t.status = col.dataset.status; persist(); renderKanban(); renderDashboard(); }
+  dragging = null;
+}
+document.addEventListener('dragend', () => {
+  document.querySelectorAll('.k-card').forEach(c=>c.classList.remove('dragging'));
+  document.querySelectorAll('.k-col').forEach(c=>c.classList.remove('drag-over'));
+});
+
+// ==================== ROADMAP ====================
+function renderRoadmap() {
+  const pid = currentProjectId;
+  const items = DB.roadmap.filter(r => r.projectId === pid);
+  const editable = canEdit(pid);
+  const now = new Date();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const startMonth = now.getMonth();
+  const displayMonths = Array.from({length:6},(_,i)=>months[(startMonth+i)%12]);
+  const currentIdx = 0;
+
+  const el = document.getElementById('tab-roadmap');
+  const addBtn = editable ? `<button class="btn primary" onclick="openAddRmItem()">+ Add item</button>` : '';
+
+  const monthHeaders = displayMonths.map((m,i)=>`<div class="rm-month${i===currentIdx?' now':''}">${m}</div>`).join('');
+
+  const rows = items.map(item => {
+    const sp = Math.max(0, Math.min(item.start-1, 5)) / 6 * 100;
+    const wp = Math.min(item.dur, 7-item.start) / 6 * 100;
+    const gridLines = Array.from({length:6},(_,i)=>`<div class="rm-grid-line${i===currentIdx?' now':''}" style="left:${(i/6)*100}%;width:${100/6}%"></div>`).join('');
+    return `<div class="rm-row" style="grid-template-columns:180px 1fr;">
+      <div class="rm-label-cell" style="min-height:52px;">${item.name}</div>
+      <div class="rm-timeline-cell">${gridLines}
+        <div class="rm-bar ${item.color}" style="left:calc(${sp}% + 4px);width:calc(${wp}% - 8px);" ${editable?`onclick="editRmItem(${item.id})"`:''}>${item.name}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="page-header">
+      <div><div class="page-title">Roadmap</div><div class="page-sub">6-month project timeline</div></div>
+      <div class="btn-row">${addBtn}</div>
+    </div>
+    <div class="rm-container">
+      <div class="rm-header-row" style="display:grid;grid-template-columns:180px repeat(6,1fr);">
+        <div style="border-right:1px solid var(--border);padding:8px 14px;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;">Project</div>
+        ${monthHeaders}
+      </div>
+      ${rows || '<div class="empty-state" style="padding:32px;">No roadmap items yet.</div>'}
+    </div>`;
+}
+
+// ==================== TEAM ====================
+function getProjectUsers() {
+  const p = DB.projects.find(x => x.id === currentProjectId);
+  if (!p) return [];
+  if (currentUser.isAdmin) {
+    const ids = [...new Set([...(p.access||[]).map(a=>a.userId), currentUser.id])];
+    return DB.users.filter(u => ids.includes(u.id));
+  }
+  const ids = (p.access||[]).map(a=>a.userId);
+  return DB.users.filter(u => ids.includes(u.id));
+}
+
+function renderTeam() {
+  const users = getProjectUsers();
+  const tasks = DB.tasks.filter(t => t.projectId === currentProjectId);
+  const el = document.getElementById('tab-team');
+  const addBtn = currentUser.isAdmin ? `<button class="btn" onclick="openUserSettings()">Manage users</button>` : '';
+  el.innerHTML = `
+    <div class="page-header">
+      <div><div class="page-title">Team</div><div class="page-sub">${users.length} member${users.length!==1?'s':''} with access</div></div>
+      <div class="btn-row">${addBtn}</div>
+    </div>
+    <div class="team-grid">${users.map(u => {
+      const ut = tasks.filter(t=>t.ownerName===u.name);
+      const done = ut.filter(t=>t.status==='done').length;
+      const active = ut.filter(t=>['in-progress','review'].includes(t.status)).length;
+      const blocked = ut.filter(t=>t.status==='blocked').length;
+      const init = u.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+      const role = getMyRole(currentProjectId) === 'admin' || currentUser.isAdmin
+        ? ((DB.projects.find(p=>p.id===currentProjectId)?.access||[]).find(a=>a.userId===u.id)?.role || 'admin')
+        : '';
+      return `<div class="team-card">
+        <div class="team-av" style="background:${u.color}33;color:${u.color}">${init}</div>
+        <div class="team-name">${u.name}</div>
+        <div class="team-role">${u.role}${role?` · <span class="badge role-${role}" style="font-size:10px;">${role}</span>`:''}</div>
+        <div class="team-nums">
+          <div class="team-num"><div class="team-num-val c-blue">${active}</div><div class="team-num-label">Active</div></div>
+          <div class="team-num"><div class="team-num-val c-red">${blocked}</div><div class="team-num-label">Blocked</div></div>
+          <div class="team-num"><div class="team-num-val c-green">${done}</div><div class="team-num-label">Done</div></div>
+        </div>
+        ${ut.filter(t=>t.status!=='done').length ? `<div class="team-tasks-list">${ut.filter(t=>t.status!=='done').slice(0,3).map(t=>`<div class="team-task-row"><div class="dot dot-${t.pri==='high'?'red':t.pri==='med'?'amber':'green'}"></div>${t.name}</div>`).join('')}</div>` : ''}
+      </div>`;
+    }).join('')}</div>`;
+}
+
+// ==================== ACCESS ====================
+function renderAccess() {
+  const p = DB.projects.find(x => x.id === currentProjectId);
+  if (!p) return;
+  const access = p.access || [];
+  const el = document.getElementById('tab-access');
+  el.innerHTML = `
+    <div class="page-header">
+      <div><div class="page-title">Access control</div><div class="page-sub">Manage who can see and edit this project</div></div>
+      <div class="btn-row"><button class="btn primary" onclick="openInvite()">+ Invite user</button></div>
+    </div>
+    <div style="margin-bottom:16px;padding:12px 16px;background:var(--amber-light);border-radius:var(--r);font-size:12px;color:var(--amber);">
+      <strong>Roles:</strong> Admin — full control incl. access management &nbsp;·&nbsp; Member — can add/edit tasks &nbsp;·&nbsp; Viewer — read-only
+    </div>
+    <table class="access-table">
+      <thead><tr><th>User</th><th>Role / title</th><th>Access</th><th></th></tr></thead>
+      <tbody>
+        ${currentUser.isAdmin ? `<tr><td><div style="display:flex;align-items:center;gap:8px;"><div class="av" style="background:${currentUser.color}33;color:${currentUser.color};width:28px;height:28px;font-size:11px;">${currentUser.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>${currentUser.name}</div></td><td style="color:var(--text2);">${currentUser.role}</td><td><span class="badge role-admin">admin</span></td><td></td></tr>` : ''}
+        ${access.map(a => {
+          const u = DB.users.find(x => x.id === a.userId);
+          if (!u) return '';
+          const init = u.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+          return `<tr>
+            <td><div style="display:flex;align-items:center;gap:8px;"><div class="av" style="background:${u.color}33;color:${u.color};width:28px;height:28px;font-size:11px;">${init}</div>${u.name}</div></td>
+            <td style="color:var(--text2);">${u.role}</td>
+            <td>
+              <select class="role-select" onchange="updateAccess(${p.id},${u.id},this.value)">
+                <option value="admin"${a.role==='admin'?' selected':''}>Admin</option>
+                <option value="member"${a.role==='member'?' selected':''}>Member</option>
+                <option value="viewer"${a.role==='viewer'?' selected':''}>Viewer</option>
+              </select>
+            </td>
+            <td><button class="remove-access" onclick="removeAccess(${p.id},${u.id})">Remove</button></td>
+          </tr>`;
+        }).join('')}
+        ${access.length === 0 && !currentUser.isAdmin ? '<tr><td colspan="4" class="empty-state">No users added yet</td></tr>' : ''}
+      </tbody>
+    </table>`;
+}
+
+function updateAccess(pid, uid, role) {
+  const p = DB.projects.find(x => x.id === pid);
+  if (!p) return;
+  const a = (p.access||[]).find(x => x.userId === uid);
+  if (a) a.role = role;
+  persist(); renderAccess();
+}
+
+function removeAccess(pid, uid) {
+  const p = DB.projects.find(x => x.id === pid);
+  if (!p) return;
+  p.access = (p.access||[]).filter(x => x.userId !== uid);
+  persist(); renderAccess(); renderTeam();
+}
+
+// ==================== MODALS ====================
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', function(e){ if(e.target===this) this.classList.remove('open'); }));
+
+// Add project
+function openAddProject() { document.getElementById('p-name').value=''; document.getElementById('p-desc').value=''; document.getElementById('p-color').value=COLORS[DB.projects.length%COLORS.length]; openModal('modal-project'); }
+function saveProject() {
+  const name = document.getElementById('p-name').value.trim();
+  if (!name) return;
+  const p = { id: uid(), name, desc: document.getElementById('p-desc').value.trim(), color: document.getElementById('p-color').value, access: [] };
+  DB.projects.push(p);
+  persist(); closeModal('modal-project'); updateSidebar(); renderHome();
+}
+
+// Task
+function openAddTask() {
+  editingTaskId = null;
+  document.getElementById('modal-task-title').textContent = 'Add task';
+  document.getElementById('t-name').value = '';
+  document.getElementById('t-status').value = 'todo';
+  document.getElementById('t-pri').value = 'med';
+  document.getElementById('delete-task-btn').style.display = 'none';
+  populateOwnerSelect('t-owner', '');
+  openModal('modal-task');
+}
+function openAddTaskInStatus(status) { openAddTask(); document.getElementById('t-status').value = status; }
+function editTask(id) {
+  const t = DB.tasks.find(x => x.id === id);
+  if (!t) return;
+  editingTaskId = id;
+  document.getElementById('modal-task-title').textContent = 'Edit task';
+  document.getElementById('t-name').value = t.name;
+  document.getElementById('t-status').value = t.status;
+  document.getElementById('t-pri').value = t.pri;
+  document.getElementById('delete-task-btn').style.display = 'block';
+  populateOwnerSelect('t-owner', t.ownerName||'');
+  openModal('modal-task');
+}
+function saveTask() {
+  const name = document.getElementById('t-name').value.trim();
+  if (!name) return;
+  const ownerName = document.getElementById('t-owner').value;
+  const status = document.getElementById('t-status').value;
+  const pri = document.getElementById('t-pri').value;
+  if (editingTaskId) {
+    const t = DB.tasks.find(x => x.id === editingTaskId);
+    if (t) Object.assign(t, {name, ownerName, status, pri});
+  } else {
+    DB.tasks.unshift({id:uid(), projectId:currentProjectId, name, ownerName, status, pri});
+  }
+  persist(); closeModal('modal-task');
+  renderKanban(); renderDashboard();
+}
+function deleteTask() {
+  if (!editingTaskId) return;
+  DB.tasks = DB.tasks.filter(x => x.id !== editingTaskId);
+  persist(); closeModal('modal-task'); renderKanban(); renderDashboard();
+}
+
+// Roadmap
+function openAddRmItem() { editingRmId=null; document.getElementById('modal-rm-title').textContent='Add roadmap item'; document.getElementById('r-name').value=''; document.getElementById('r-start').value=1; document.getElementById('r-dur').value=2; document.getElementById('r-color').value='green'; document.getElementById('delete-rm-btn').style.display='none'; populateOwnerSelect('r-owner',''); openModal('modal-rm'); }
+function editRmItem(id) { const r=DB.roadmap.find(x=>x.id===id); if(!r)return; editingRmId=id; document.getElementById('modal-rm-title').textContent='Edit item'; document.getElementById('r-name').value=r.name; document.getElementById('r-start').value=r.start; document.getElementById('r-dur').value=r.dur; document.getElementById('r-color').value=r.color; document.getElementById('delete-rm-btn').style.display='block'; populateOwnerSelect('r-owner',r.ownerName||''); openModal('modal-rm'); }
+function saveRmItem() {
+  const name = document.getElementById('r-name').value.trim(); if(!name)return;
+  const item = {name, ownerName:document.getElementById('r-owner').value, start:parseInt(document.getElementById('r-start').value)||1, dur:parseInt(document.getElementById('r-dur').value)||1, color:document.getElementById('r-color').value};
+  if (editingRmId) { const r=DB.roadmap.find(x=>x.id===editingRmId); if(r) Object.assign(r,item); }
+  else DB.roadmap.push({id:uid(), projectId:currentProjectId, ...item});
+  persist(); closeModal('modal-rm'); renderRoadmap();
+}
+function deleteRmItem() { if(!editingRmId)return; DB.roadmap=DB.roadmap.filter(x=>x.id!==editingRmId); persist(); closeModal('modal-rm'); renderRoadmap(); }
+
+// Invite
+function openInvite() {
+  const p = DB.projects.find(x => x.id === currentProjectId);
+  const accessIds = (p?.access||[]).map(a=>a.userId);
+  const available = DB.users.filter(u => u.id !== currentUser.id && !accessIds.includes(u.id));
+  document.getElementById('inv-user').innerHTML = available.length ? available.map(u=>`<option value="${u.id}">${u.name}</option>`).join('') : '<option value="">No users to add</option>';
+  renderCurrentAccess();
+  openModal('modal-invite');
+}
+function renderCurrentAccess() {
+  const p = DB.projects.find(x => x.id === currentProjectId);
+  const access = p?.access||[];
+  document.getElementById('current-access-list').innerHTML = access.length ? access.map(a => {
+    const u = DB.users.find(x=>x.id===a.userId);
+    if(!u)return '';
+    return `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;">
+      <span style="flex:1;">${u.name}</span>
+      <select class="role-select" onchange="updateAccess(${p.id},${u.id},this.value)">
+        <option value="admin"${a.role==='admin'?' selected':''}>Admin</option>
+        <option value="member"${a.role==='member'?' selected':''}>Member</option>
+        <option value="viewer"${a.role==='viewer'?' selected':''}>Viewer</option>
+      </select>
+      <button class="remove-access" onclick="removeAccess(${p.id},${u.id});renderCurrentAccess();">×</button>
+    </div>`;
+  }).join('') : '<div style="color:var(--text3);font-size:12px;padding:8px 0;">No users added yet</div>';
+}
+function doInvite() {
+  const uid2 = parseInt(document.getElementById('inv-user').value);
+  const role = document.getElementById('inv-role').value;
+  if (!uid2) return;
+  const p = DB.projects.find(x => x.id === currentProjectId);
+  if (!p) return;
+  if (!p.access) p.access = [];
+  if (!p.access.find(a=>a.userId===uid2)) p.access.push({userId:uid2, role});
+  persist(); openInvite();
+}
+
+// Member
+function openAddMember() { document.getElementById('m-name').value=''; document.getElementById('m-user').value=''; document.getElementById('m-pass').value=''; document.getElementById('m-role').value=''; closeModal('modal-user-settings'); openModal('modal-member'); }
+function saveMember() {
+  const name=document.getElementById('m-name').value.trim();
+  const username=document.getElementById('m-user').value.trim();
+  const password=document.getElementById('m-pass').value;
+  if(!name||!username||!password)return;
+  DB.users.push({id:uid(),username,password,name,role:document.getElementById('m-role').value,color:COLORS[DB.users.length%COLORS.length],isAdmin:false});
+  persist(); closeModal('modal-member'); updateSidebar();
+}
+
+// User settings
+function openUserSettings() {
+  document.getElementById('us-name').value=currentUser.name;
+  document.getElementById('us-role').value=currentUser.role;
+  document.getElementById('us-pass').value='';
+  document.getElementById('admin-section').style.display=currentUser.isAdmin?'block':'none';
+  openModal('modal-user-settings');
+}
+function saveUserSettings() {
+  const u = DB.users.find(x=>x.id===currentUser.id);
+  if(!u)return;
+  u.name=document.getElementById('us-name').value.trim()||u.name;
+  u.role=document.getElementById('us-role').value.trim()||u.role;
+  const np=document.getElementById('us-pass').value;
+  if(np) u.password=np;
+  currentUser=u;
+  persist(); updateSidebar(); closeModal('modal-user-settings');
+}
+
+function populateOwnerSelect(selectId, current) {
+  const users = getProjectUsers();
+  const el = document.getElementById(selectId);
+  el.innerHTML = '<option value="">Unassigned</option>' + users.map(u=>`<option value="${u.name}"${u.name===current?' selected':''}>${u.name}</option>`).join('');
+}
+</script>
+</body>
+</html>
